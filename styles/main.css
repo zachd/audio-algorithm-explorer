@@ -1,0 +1,462 @@
+/* Global styles */
+:root {
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --background-color: #f8f9fa;
+    --text-color: #212529;
+    --quote-color: #e9ecef;
+    --border-color: #dee2e6;
+}
+
+body {
+    padding-top: 56px;
+    color: var(--text-color);
+    line-height: 1.6;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Navigation */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-weight: 600;
+}
+
+/* Audio upload container */
+.audio-upload-container {
+    background: var(--background-color);
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Blog post styling */
+.blog-post {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 0;
+}
+
+.blog-post h1 {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    font-weight: 700;
+}
+
+.blog-post h2 {
+    font-size: 2rem;
+    margin: 3rem 0 1.5rem;
+    font-weight: 600;
+}
+
+.blog-post h3 {
+    font-size: 1.5rem;
+    margin: 2rem 0 1rem;
+    font-weight: 500;
+}
+
+.blog-post h4 {
+    font-size: 1.25rem;
+    margin: 1.5rem 0 1rem;
+    font-weight: 500;
+}
+
+.blog-post p {
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.blog-post .lead {
+    font-size: 1.25rem;
+    font-weight: 300;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+}
+
+/* Interactive sections */
+.interactive-section {
+    margin: 3rem -1rem;
+    padding: 2rem 1rem;
+    background: var(--background-color);
+    border-radius: 8px;
+}
+
+.interactive-diagram {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.interactive-diagram h4 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.visualization-container {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.visualization-wrapper {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    margin: 1rem 0;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.visualization-wrapper canvas {
+    width: 100%;
+    height: 100%;
+}
+
+/* Grid lines */
+.grid-lines {
+    position: absolute;
+    top: 3rem;
+    left: 4rem;
+    right: 4rem;
+    bottom: 3rem;
+    pointer-events: none;
+}
+
+/* Axis styles */
+.axis {
+    position: absolute;
+    color: #666;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.y-axis {
+    left: 1rem;
+    top: 50%;
+    transform: rotate(-90deg) translateX(50%);
+    transform-origin: left center;
+}
+
+.x-axis {
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Axis ticks */
+.tick {
+    position: absolute;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.y-tick {
+    right: calc(100% + 0.5rem);
+    transform: translateY(-50%);
+}
+
+.x-tick {
+    top: calc(100% + 0.5rem);
+    transform: translateX(-50%);
+}
+
+/* Floating controls */
+.floating-controls {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+#playBtn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+#playBtn:hover {
+    transform: scale(1.05);
+}
+
+#playBtn i {
+    font-size: 1.2rem;
+}
+
+.time-display {
+    font-family: monospace;
+    font-size: 1rem;
+    color: #333;
+    min-width: 100px;
+    text-align: center;
+}
+
+.progress {
+    width: 300px;
+    height: 6px;
+    background: #eee;
+    border-radius: 3px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: height 0.2s;
+}
+
+.progress:hover {
+    height: 8px;
+}
+
+.progress-bar {
+    height: 100%;
+    background: #007bff;
+    transition: width 0.1s linear;
+}
+
+/* Spectrogram controls */
+.controls {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+#thresholdSlider {
+    flex: 1;
+    max-width: 300px;
+}
+
+.threshold-value {
+    min-width: 3ch;
+    display: inline-block;
+    text-align: center;
+    font-family: monospace;
+}
+
+/* Improve range input appearance */
+input[type="range"] {
+    -webkit-appearance: none;
+    height: 6px;
+    background: #eee;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #007bff;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .floating-controls {
+        width: calc(100% - 2rem);
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 1rem;
+    }
+    
+    .progress {
+        width: 100%;
+    }
+    
+    .visualization-wrapper {
+        padding: 1rem;
+    }
+    
+    .axis {
+        font-size: 0.8rem;
+    }
+}
+
+/* Spectrogram controls */
+.spectrogram-controls {
+    margin: 1rem 0;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.control-group {
+    margin-bottom: 0.5rem;
+}
+
+.control-group:last-child {
+    margin-bottom: 0;
+}
+
+.control-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.threshold-control {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.threshold-control input[type="range"] {
+    flex: 1;
+}
+
+.threshold-value {
+    min-width: 3em;
+    text-align: right;
+    font-family: monospace;
+}
+
+/* Callout quotes */
+.callout-quote {
+    border-left: 4px solid var(--primary-color);
+    padding: 1.5rem;
+    margin: 2rem 0;
+    background: var(--quote-color);
+    border-radius: 0 8px 8px 0;
+}
+
+.callout-quote p {
+    margin: 0;
+    font-size: 1.1rem;
+    font-style: italic;
+    color: var(--secondary-color);
+}
+
+/* Lists */
+.blog-post ol {
+    margin: 1.5rem 0;
+    padding-left: 1.2rem;
+}
+
+.blog-post ol li {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+/* Footer */
+.footer {
+    border-top: 1px solid var(--border-color);
+    margin-top: 4rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .blog-post {
+        padding: 1rem;
+    }
+
+    .interactive-section {
+        margin: 2rem -1rem;
+        padding: 1.5rem 1rem;
+    }
+
+    .visualization-container {
+        height: 200px;
+    }
+    
+    .visualization {
+        height: 200px;
+    }
+
+    .blog-post h1 {
+        font-size: 2rem;
+    }
+
+    .blog-post h2 {
+        font-size: 1.75rem;
+    }
+
+    .blog-post h3 {
+        font-size: 1.35rem;
+    }
+
+    .blog-post .lead {
+        font-size: 1.15rem;
+    }
+
+    .spectrogram-container {
+        height: 300px;
+        padding: 0 20px 20px 40px;
+        margin: 1rem 0;
+    }
+
+    .frequency-scale {
+        width: 40px;
+        font-size: 0.7rem;
+    }
+
+    .time-scale {
+        left: 40px;
+        right: 20px;
+        height: 20px;
+        font-size: 0.7rem;
+    }
+}
+
+/* Button styles */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    filter: brightness(90%);
+}
+
+/* Form controls */
+.form-range {
+    width: 100%;
+}
+
+.form-control {
+    border-color: var(--border-color);
+}
+
+/* Animations */
+.btn {
+    transition: all 0.2s ease-in-out;
+}
+
+.interactive-diagram {
+    transition: transform 0.2s ease-in-out;
+}
+
+.interactive-diagram:hover {
+    transform: translateY(-2px);
+}
