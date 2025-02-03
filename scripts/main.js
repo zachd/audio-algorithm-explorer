@@ -4,6 +4,7 @@
 
 import { AudioLoader } from './utils/audio-loader.js';
 import { WaveformVisualizer } from './visualizations/waveform.js';
+import { SpectrogramVisualizer } from './visualizations/spectrogram.js';
 
 class ShazamVisualizer {
     constructor() {
@@ -24,7 +25,7 @@ class ShazamVisualizer {
             // Load demo audio
             await this.loadDemoAudio();
             
-            // Initialize visualizers
+            // Initialize visualizers after audio is loaded
             this.initializeVisualizers();
             
             // Setup playback controls
@@ -55,19 +56,32 @@ class ShazamVisualizer {
     }
 
     /**
-     * Initialize all visualizers
+     * Initialize visualizers for different sections
      */
     initializeVisualizers() {
+        if (!this.audioLoader.isLoaded) {
+            console.error('Cannot initialize visualizers: Audio not loaded');
+            return;
+        }
+
         // Initialize waveform visualizer
-        const waveformCanvas = document.querySelector('canvas[data-type="waveform"]');
+        const waveformCanvas = document.getElementById('waveformCanvas');
         if (waveformCanvas) {
             const container = waveformCanvas.parentElement;
             const { width, height } = container.getBoundingClientRect();
-            
-            const visualizer = new WaveformVisualizer(waveformCanvas, width, height);
-            visualizer.setWaveformData(this.audioLoader.getWaveformData());
-            
-            this.visualizers.set('waveform', visualizer);
+            const waveformVisualizer = new WaveformVisualizer(waveformCanvas, width, height);
+            this.visualizers.set('waveform', waveformVisualizer);
+            waveformVisualizer.setWaveformData(this.audioLoader.getWaveformData());
+        }
+
+        // Initialize spectrogram visualizer
+        const spectrogramCanvas = document.getElementById('spectrogramCanvas');
+        if (spectrogramCanvas) {
+            const container = spectrogramCanvas.parentElement;
+            const { width, height } = container.getBoundingClientRect();
+            const spectrogramVisualizer = new SpectrogramVisualizer(spectrogramCanvas, width, height);
+            this.visualizers.set('spectrogram', spectrogramVisualizer);
+            spectrogramVisualizer.setAudioData(this.audioLoader.getAudioData());
         }
     }
 
@@ -106,10 +120,14 @@ class ShazamVisualizer {
                 progressBar.style.width = `${progress}%`;
                 this.updateCurrentTime(currentTime);
                 
-                // Update waveform cursor
+                // Update waveform and spectrogram
                 const waveformVisualizer = this.visualizers.get('waveform');
+                const spectrogramVisualizer = this.visualizers.get('spectrogram');
                 if (waveformVisualizer) {
                     waveformVisualizer.updatePlayback(this.isPlaying, currentTime, duration);
+                }
+                if (spectrogramVisualizer) {
+                    spectrogramVisualizer.updatePlayback(this.isPlaying, currentTime, duration);
                 }
             }
             
@@ -129,10 +147,14 @@ class ShazamVisualizer {
             const playBtn = document.getElementById('playBtn');
             playBtn.innerHTML = '<i class="fas fa-pause"></i>';
             
-            // Update waveform
+            // Update waveform and spectrogram
             const waveformVisualizer = this.visualizers.get('waveform');
+            const spectrogramVisualizer = this.visualizers.get('spectrogram');
             if (waveformVisualizer) {
                 waveformVisualizer.updatePlayback(true, this.audioLoader.getCurrentTime(), this.audioLoader.getDuration());
+            }
+            if (spectrogramVisualizer) {
+                spectrogramVisualizer.updatePlayback(true, this.audioLoader.getCurrentTime(), this.audioLoader.getDuration());
             }
         }
     }
@@ -147,10 +169,14 @@ class ShazamVisualizer {
             const playBtn = document.getElementById('playBtn');
             playBtn.innerHTML = '<i class="fas fa-play"></i>';
             
-            // Update waveform
+            // Update waveform and spectrogram
             const waveformVisualizer = this.visualizers.get('waveform');
+            const spectrogramVisualizer = this.visualizers.get('spectrogram');
             if (waveformVisualizer) {
                 waveformVisualizer.updatePlayback(false, this.audioLoader.getCurrentTime(), this.audioLoader.getDuration());
+            }
+            if (spectrogramVisualizer) {
+                spectrogramVisualizer.updatePlayback(false, this.audioLoader.getCurrentTime(), this.audioLoader.getDuration());
             }
         }
     }
@@ -211,11 +237,21 @@ class ShazamVisualizer {
      */
     handleResize() {
         this.visualizers.forEach((visualizer, type) => {
-            const canvas = document.querySelector(`canvas[data-type="${type}"]`);
+            const canvas = document.getElementById(`${type}Canvas`);
             if (canvas) {
                 const container = canvas.parentElement;
                 const { width, height } = container.getBoundingClientRect();
-                visualizer.resize(width, height);
+                
+                visualizer.canvas.width = width;
+                visualizer.canvas.height = height;
+                visualizer.width = width;
+                visualizer.height = height;
+                
+                if (type === 'waveform') {
+                    visualizer.setWaveformData(this.audioLoader.getWaveformData());
+                } else {
+                    visualizer.setAudioData(this.audioLoader.getAudioData());
+                }
             }
         });
     }

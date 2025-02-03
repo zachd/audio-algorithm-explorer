@@ -86,26 +86,18 @@
                 <p>Before we dive into Shazam's magic, let's understand what we're working with. Sound is just vibrating air—when a speaker plays music, it's pushing and pulling air molecules to create pressure waves that reach our ears.</p>
                 
                 <div class="visualization-container">
-                    <h3>Wave Explorer</h3>
-                    <p>Here's your song broken down into its raw form—a waveform. Think of it as music's signature written in air pressure:</p>
-                    <ul class="visualization-guide">
-                        <li>🔊 Taller waves = Louder sounds</li>
-                        <li>〰️ Squished waves = Higher pitch</li>
-                        <li>🎵 Complex patterns = Rich musical textures</li>
-                    </ul>
                     <div class="visualization-wrapper">
-                        <canvas data-type="waveform" class="visualization-canvas"></canvas>
-                    </div>
-                    <div class="controls">
-                        <p class="control-tip">👆 Zoom in! Click and drag to explore different parts of your song.</p>
+                        <canvas id="waveformCanvas"></canvas>
                     </div>
                 </div>
 
-                <h3>2.2. The Frequency Domain: Music's Hidden Structure</h3>
-                <p>While a waveform shows us how sound changes over time, it's not very useful for identifying songs. Think about it: even the same song played at different volumes would have different waveforms! We need something more robust.</p>
-                
-                <div class="callout-technical">
-                    <p><strong>Quick science:</strong> Every sound is made up of different frequencies mixed together. A piano note at middle C vibrates at 262 Hz (times per second), but it also creates higher harmonics that give it that distinct "piano sound". Our ears are amazing at separating these frequencies—and with some math magic called the Fast Fourier Transform (FFT), computers can do it too!</p>
+                <h3>2.2. The Frequency Domain</h3>
+                <p>While waveforms show us how sound pressure changes over time, they don't tell us much about the frequencies present in the sound. This is where the Fast Fourier Transform (FFT) comes in. The FFT breaks down our sound wave into its constituent frequencies, showing us exactly which musical notes are playing at any moment.</p>
+
+                <div class="visualization-container">
+                    <div class="visualization-wrapper">
+                        <canvas id="spectrogramCanvas"></canvas>
+                    </div>
                 </div>
 
                 <h3>2.3. Enter the FFT (Fast Fourier Transform)</h3>
@@ -116,6 +108,10 @@
                     <li>It's closer to how our ears actually process sound</li>
                 </ul>
                 
+                <div class="callout-technical">
+                    <p><strong>Quick science:</strong> Every sound is made up of different frequencies mixed together. A piano note at middle C vibrates at 262 Hz (times per second), but it also creates higher harmonics that give it that distinct "piano sound". Our ears are amazing at separating these frequencies—and with some math magic called the Fast Fourier Transform (FFT), computers can do it too!</p>
+                </div>
+
                 <div class="callout-example">
                     <p><strong>Real-world parallel:</strong> Imagine you're trying to identify a cake recipe just by looking at the finished cake. The waveform is like looking at the whole cake, while the FFT is like listing out all the ingredients—much more useful for identification!</p>
                 </div>
@@ -188,7 +184,7 @@
                 </div>
 
                 <div class="callout-example">
-                    <p><strong>Think of it like this:</strong> If the spectrogram peaks are stars, Shazam is creating constellations by drawing lines between them. Just like how we can recognize Orion's Belt from just three stars in a line, Shazam can recognize a song from just a few connected peaks!</p>
+                    <p><strong>Think of it like this:</strong> If the spectrogram peaks are stars, Shazam is creating constellations by drawing lines between them. Just like how you can recognize Orion's Belt from just three stars in a line, Shazam can recognize a song from just a few connected peaks!</p>
                 </div>
 
                 <h3>4.2. The Magic Numbers</h3>
@@ -294,27 +290,6 @@
 
             <section id="summary">
                 <h2>7. Putting It All Together</h2>
-                <p>And there you have it! Shazam's algorithm is a beautiful example of turning a complex problem into a series of clever, simple steps:</p>
-                <ol>
-                    <li>📊 Convert audio to a spectrogram (FFT)</li>
-                    <li>⭐ Find the brightest points (peaks)</li>
-                    <li>🌟 Create constellations (pair points)</li>
-                    <li>🔢 Generate hashes (fingerprints)</li>
-                    <li>🔍 Search for matches (database lookup)</li>
-                    <li>✅ Verify alignment (time offset clustering)</li>
-                </ol>
-
-                <div class="callout-quote">
-                    <p>"The best algorithms are often the ones that find a simple way to solve a complex problem. Shazam's genius lies not in using cutting-edge AI or complex math, but in reducing audio recognition to a straightforward pattern matching problem that even a 2002 phone could solve quickly."</p>
-                </div>
-
-                <p class="lead">Now that you understand how it works, try the interactive demos above with different songs and noise levels. It's amazing how such a seemingly simple approach can be so powerful in practice!</p>
-class="callout-technical">
-                    <p><strong>The numbers:</strong> Even if only 1-2% of your original hashes survive the noise, that's often enough for a match! From a 10-second clip, Shazam might generate 1000+ hashes—so even 10-20 surviving matches can be enough to identify the song with high confidence.</p>
-                </div>
-
-                <div class="fun-fact">
-                    <p><strong>Superhuman ability:</strong> Shazam can even identifll Together</h2>
                 <p>And there you have it! Shazam's algorithm is a beautiful example of turning a complex problem into a series of clever, simple steps:</p>
                 <ol>
                     <li>📊 Convert audio to a spectrogram (FFT)</li>

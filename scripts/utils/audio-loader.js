@@ -65,6 +65,19 @@ export class AudioLoader {
     }
 
     /**
+     * Get raw audio data for spectral analysis
+     * @returns {Float32Array} Raw audio data
+     */
+    getAudioData() {
+        if (!this.isLoaded) {
+            throw new Error('Audio not loaded');
+        }
+        
+        // Get the raw audio data from the first channel
+        return this.audioBuffer.getChannelData(0);
+    }
+
+    /**
      * Play the audio from current offset
      */
     play() {
