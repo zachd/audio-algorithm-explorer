@@ -43,14 +43,16 @@ class ShazamVisualizer {
         this.progressBar = document.getElementById('progressBar');
         this.currentTimeSpan = document.getElementById('currentTime');
         this.totalTimeSpan = document.getElementById('totalTime');
+        this.songSelect = document.getElementById('songSelect');
         
         // Bind event handlers
         this.playBtn.addEventListener('click', () => this.togglePlayback());
         document.getElementById('progressBar').parentElement.addEventListener('click', (e) => this.seekAudio(e));
         document.getElementById('nextAnchorBtn')?.addEventListener('click', () => this.fingerprintVisualizer.nextAnchor());
+        this.songSelect.addEventListener('change', () => this.handleSongSelection());
         
         // Load default audio
-        this.loadAudio('assets/demo-song.mp3');
+        this.loadAudio(this.songSelect.value);
     }
 
     async loadAudio(url) {
@@ -200,6 +202,16 @@ class ShazamVisualizer {
             cancelAnimationFrame(this.animationFrame);
             this.animationFrame = null;
         }
+    }
+
+    handleSongSelection() {
+        if (this.isPlaying) {
+            this.pauseAudio();
+        }
+        this.loadAudio(this.songSelect.value);
+        // Update song title
+        const songTitle = this.songSelect.options[this.songSelect.selectedIndex].text;
+        document.querySelector('.song-title').textContent = songTitle;
     }
 }
 

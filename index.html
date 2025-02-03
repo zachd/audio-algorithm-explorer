@@ -19,22 +19,26 @@
     </div>
 
     <div id="floatingPlayback" class="floating-playback">
-        <div id="floatingControls" class="floating-controls">
-            <div class="playback-controls">
-                <button id="playBtn" class="play-btn">
-                    <i class="fas fa-play"></i>
-                </button>
-                <div class="playback-info">
-                    <div class="song-title">Eine Kleine Nachtmusik - Mozart</div>
-                    <div class="time-display">
-                        <span id="currentTime">0:00</span>
-                        <span class="time-separator">/</span>
-                        <span id="totalTime">0:00</span>
-                    </div>
+        <div class="playback-controls">
+            <select id="songSelect" class="song-select">
+                <option value="assets/mozart-eine-kleine-nachtmusik.mp3">Eine Kleine Nachtmusik</option>
+                <option value="assets/bach-toccata-and-fugue-in-d-minor.mp3">Toccata and Fugue in D Minor</option>
+                <option value="assets/grieg-in-the-hall-of-the-mountain-king.mp3">In the Hall of the Mountain King</option>
+                <option value="assets/tchaikovsky-swan-lake.mp3">Swan Lake</option>
+            </select>
+            <button id="playBtn" class="play-btn">
+                <i class="fas fa-play"></i>
+            </button>
+            <div class="playback-info">
+                <div class="song-title">Eine Kleine Nachtmusik - Mozart</div>
+                <div class="time-display">
+                    <span id="currentTime">0:00</span>
+                    <span class="time-separator">/</span>
+                    <span id="totalTime">0:00</span>
                 </div>
-                <div class="progress">
-                    <div id="progressBar" class="progress-bar" role="progressbar"></div>
-                </div>
+            </div>
+            <div class="progress">
+                <div id="progressBar" class="progress-bar" role="progressbar"></div>
             </div>
         </div>
     </div>
