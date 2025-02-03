@@ -19,6 +19,27 @@ body {
     padding: 0;
 }
 
+/* Layout */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+main.container {
+    margin-top: 4rem;  
+    padding-bottom: 4rem;
+}
+
 /* Navigation */
 .navbar {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -43,10 +64,15 @@ body {
     padding: 2rem 0;
 }
 
+.blog-post header {
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
 .blog-post h1 {
     font-size: 2.5rem;
-    margin-bottom: 2rem;
-    font-weight: 700;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
 }
 
 .blog-post h2 {
@@ -125,177 +151,187 @@ body {
     border-radius: 4px;
     overflow: hidden;
     margin: 1rem 0;
+    position: relative;
 }
 
-#waveformCanvas,
-#spectrogramCanvas {
-    width: 100%;
-    height: 100%;
-    display: block;
-}
-
-/* Dark theme for spectrogram */
-.visualization-wrapper:has(#spectrogramCanvas) {
-    background-color: #1a1a1a;
-    border-color: #333;
+.placeholder-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #6c757d;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border: 1px dashed #dee2e6;
 }
 
 .visualization-canvas {
     width: 100%;
-    height: 200px;
+    height: 100%;
     display: block;
     image-rendering: pixelated;
     touch-action: none;
 }
 
-.visualization-guide {
-    list-style: none;
-    padding: 0;
-    margin: 1rem 0;
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.visualization-guide li {
-    background: #f5f5f5;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    color: #666;
+.visualization-wrapper:has(#spectrogramCanvas) {
+    background-color: #1a1a1a;
+    border-color: #333;
 }
 
 .controls {
     margin-top: 1rem;
-    padding: 1rem;
-    background: #f8f9fa;
+    text-align: center;
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
     border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    background-color: #007bff;
+    color: white;
+    border: none;
+}
+
+.btn:hover {
+    background-color: #0056b3;
 }
 
 .control-tip {
     color: #666;
     font-size: 0.9rem;
     margin: 0.5rem 0;
-    line-height: 1.4;
+    text-align: center;
 }
 
-#thresholdSlider {
-    width: 100%;
-    margin: 1rem 0;
-}
-
-.threshold-value {
-    font-weight: bold;
-    color: #2196f3;
-}
-
-/* Axis styles */
 .axis {
     position: absolute;
+    display: flex;
+    justify-content: space-between;
     color: #666;
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-.y-axis {
-    left: 1rem;
-    top: 50%;
-    transform: rotate(-90deg) translateX(50%);
-    transform-origin: left center;
-}
-
-.x-axis {
-    bottom: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-/* Axis ticks */
-.tick {
-    position: absolute;
     font-size: 0.8rem;
-    color: #666;
 }
 
-.y-tick {
-    right: calc(100% + 0.5rem);
-    transform: translateY(-50%);
+.axis.x-axis {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0 1rem;
 }
 
-.x-tick {
-    top: calc(100% + 0.5rem);
-    transform: translateX(-50%);
+.axis.y-axis {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    flex-direction: column;
+    padding: 1rem 0;
+}
+
+.callout-example,
+.callout-technical {
+    margin: 1rem 0;
+    padding: 1rem;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    border-left: 4px solid #007bff;
+}
+
+.fun-fact {
+    margin: 1rem 0;
+    padding: 1rem;
+    border-radius: 4px;
+    background-color: #e3f2fd;
+    border: 1px solid #90caf9;
 }
 
 /* Floating playback controls */
 .floating-playback {
     position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
+    bottom: 0;
+    left: 0;
+    right: 0;
     background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    padding: 10px;
-    width: min(300px, calc(100% - 40px));
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-    will-change: transform;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    padding: 0.5rem 1rem;
 }
 
-.floating-playback:hover {
-    transform: translateX(-50%) translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-}
-
-.floating-controls {
+.playback-controls {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 1rem;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
-.floating-controls button {
-    flex-shrink: 0;
-    min-width: 40px;
-    height: 40px;
-    padding: 0;
+.play-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    transition: transform 0.2s ease-in-out;
+    flex-shrink: 0;
 }
 
-.floating-controls button:hover {
-    transform: scale(1.05);
+.play-btn:hover {
+    background: #0056b3;
 }
 
-.floating-controls .time-display {
-    font-size: 0.9em;
-    color: #666;
-    white-space: nowrap;
-}
-
-.floating-controls .progress {
+.playback-info {
     flex-grow: 1;
-    height: 6px;
-    background-color: #eee;
-    border-radius: 3px;
-    overflow: hidden;
-    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
 }
 
-.floating-controls .progress-bar {
-    background-color: var(--primary-color);
+.song-title {
+    font-weight: 500;
+    color: #333;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.time-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #666;
+    font-size: 0.8rem;
+}
+
+.time-separator {
+    color: #999;
+}
+
+.progress {
+    flex-grow: 1;
+    height: 4px;
+    background: #e9ecef;
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
+}
+
+.progress-bar {
+    height: 100%;
+    background: #007bff;
+    border-radius: 2px;
     transition: width 0.1s linear;
 }
 
-@media (max-width: 768px) {
-    .floating-playback {
-        bottom: 10px;
-        width: calc(100% - 20px);
-    }
+.progress:hover .progress-bar {
+    background: #0056b3;
 }
 
 /* Floating controls */
@@ -493,6 +529,67 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .blog-post ol li {
     margin-bottom: 1rem;
     font-size: 1.1rem;
+}
+
+/* Content styles */
+.intro {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: #444;
+    margin: 2rem 0;
+}
+
+.intro a {
+    color: #007bff;
+    text-decoration: none;
+    border-bottom: 1px solid #007bff;
+}
+
+.intro a:hover {
+    color: #0056b3;
+    border-bottom-color: #0056b3;
+}
+
+.reference {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border-left: 4px solid #007bff;
+}
+
+.reference p {
+    margin: 0;
+    color: #555;
+    line-height: 1.6;
+}
+
+.reference a {
+    color: #007bff;
+    text-decoration: none;
+    border-bottom: 1px solid #007bff;
+}
+
+.reference a:hover {
+    color: #0056b3;
+    border-bottom-color: #0056b3;
+}
+
+.callout-example,
+.callout-technical {
+    margin: 1rem 0;
+    padding: 1rem;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    border-left: 4px solid #007bff;
+}
+
+.fun-fact {
+    margin: 1rem 0;
+    padding: 1rem;
+    border-radius: 4px;
+    background-color: #e3f2fd;
+    border: 1px solid #90caf9;
 }
 
 /* Footer */

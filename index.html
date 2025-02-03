@@ -20,14 +20,21 @@
 
     <div id="floatingPlayback" class="floating-playback">
         <div id="floatingControls" class="floating-controls">
-            <button id="playBtn" class="btn btn-primary btn-sm">
-                <i class="fas fa-play"></i>
-            </button>
-            <div class="time-display">
-                <span id="currentTime">0:00</span> / <span id="totalTime">0:00</span>
-            </div>
-            <div class="progress">
-                <div id="progressBar" class="progress-bar" role="progressbar"></div>
+            <div class="playback-controls">
+                <button id="playBtn" class="play-btn">
+                    <i class="fas fa-play"></i>
+                </button>
+                <div class="playback-info">
+                    <div class="song-title">Eine Kleine Nachtmusik - Mozart</div>
+                    <div class="time-display">
+                        <span id="currentTime">0:00</span>
+                        <span class="time-separator">/</span>
+                        <span id="totalTime">0:00</span>
+                    </div>
+                </div>
+                <div class="progress">
+                    <div id="progressBar" class="progress-bar" role="progressbar"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -53,8 +60,17 @@
 
     <main class="container">
         <article class="blog-post">
-            <h1>The Shazam Algorithm Explained</h1>
-            
+            <header>
+                <h1>How Shazam Works: The Magic Behind Music Recognition</h1>
+                <p class="intro">
+                    Ever wondered how Shazam can identify songs in seconds, even in noisy environments? 
+                    Let's dive into the brilliant algorithm behind it, first described by Avery Wang in his 2003 paper 
+                    "<a href="https://www.ee.columbia.edu/~dpwe/papers/Wang03-shazam.pdf">An Industrial-Strength Audio Search Algorithm</a>".
+                    Through interactive visualizations, we'll explore how Shazam transforms sound into unique fingerprints 
+                    and matches them against its vast database.
+                </p>
+            </header>
+
             <section id="intro">
                 <p class="lead">Ever wondered how Shazam can magically identify any song playing around you in seconds? In this interactive guide, we'll uncover the clever engineering that makes this possible. You'll discover how Shazam transforms music into digital fingerprints and matches them against millions of songs faster than you can say "what's that song?"</p>
                 <div class="callout-info">
@@ -195,107 +211,74 @@
                 </div>
             </section>
 
-            <section id="matching" class="interactive-section">
-                <h2>5. The Search: Finding Matches at Lightning Speed</h2>
-                
-                <h3>5.1. The Needle in the Haystack Problem</h3>
-                <p>Now comes the really tricky part: how do you match a 10-second clip against millions of songs—and do it in milliseconds? Shazam's approach is brilliant in its simplicity:</p>
-                <ol>
-                    <li>Take each hash from your sample</li>
-                    <li>Look for matching hashes in the database</li>
-                    <li>When you find a match, record the time difference</li>
-                    <li>Look for clusters of matches with the same time difference</li>
-                </ol>
-
+            <section id="fingerprint">
+                <h2>Fingerprint Generation</h2>
+                <p>
+                    Now that we have our constellation map, we can generate a unique fingerprint for the song.
+                    For each anchor point (shown in green), we look at points within a target zone (shown in blue).
+                    Each pair of points creates a hash that includes their frequencies, time difference, and the anchor point's time.
+                </p>
                 <div class="visualization-container">
-                    <h3>Match Detective</h3>
-                    <p>Watch the matching process in action:</p>
                     <div class="visualization-wrapper">
-                        <canvas data-type="matching" class="visualization-canvas"></canvas>
+                        <div class="placeholder-text">Fingerprint Generation Visualization Coming Soon</div>
                     </div>
-                    <div class="controls">
-                        <button id="nextMatchBtn" class="btn btn-primary">Next Match</button>
-                        <p class="control-tip">🕵️ Click to see how matches accumulate to identify the song</p>
-                    </div>
-                </div>
-
-                <h3>5.2. Time Alignment: The Key to Accuracy</h3>
-                <p>Here's the clever bit: if you've found the right song, all the matching hashes will have the same time offset between your sample and the original song. It's like sliding your sample along the original until all the constellations line up perfectly!</p>
-
-                <div class="callout-example">
-                    <p><strong>Real-world parallel:</strong> It's like trying to find where a torn piece of paper came from—when you find the right spot, all the edges line up perfectly. In Shazam's case, when you find the right song, all the time offsets line up!</p>
-                </div>
-
-                <div class="callout-technical">
-                    <p><strong>Speed secret:</strong> Instead of comparing your sample against each song one by one (which would take forever), Shazam uses a clever database structure that can find all matching hashes instantly, regardless of which song they're from. It's like having a magical index that can instantly find any word in a library of books!</p>
                 </div>
             </section>
 
-            <section id="noise" class="interactive-section">
-                <h2>6. Handling the Real World: Why Shazam Works in Noisy Places</h2>
-                
-                <h3>6.1. The Cocktail Party Problem</h3>
-                <p>Ever wondered why Shazam can identify a song playing in a noisy bar? The algorithm is designed to be incredibly resilient to real-world conditions:</p>
-                <ul>
-                    <li>🗣️ Background chatter</li>
-                    <li>📱 Phone microphone quality</li>
-                    <li>📶 Audio compression</li>
-                    <li>🔊 Speaker distortion</li>
-                </ul>
-
+            <section id="database">
+                <h2>Searching for Matches</h2>
+                <p>
+                    With our fingerprints generated, Shazam can now search its massive database for matches. Each hash acts like 
+                    a key that points to songs containing that exact same pattern. The more matching hashes we find, the more 
+                    confident we can be that we've found the right song.
+                </p>
                 <div class="visualization-container">
-                    <h3>Noise Survivor</h3>
-                    <p>See how the constellation pattern survives different types of noise:</p>
                     <div class="visualization-wrapper">
-                        <canvas data-type="noise" class="visualization-canvas"></canvas>
+                        <div class="placeholder-text">Database Matching Visualization Coming Soon</div>
                     </div>
-                    <div class="controls">
-                        <select id="noiseType" class="form-select">
-                            <option value="none">Clean Audio</option>
-                            <option value="white">Background Noise</option>
-                            <option value="voice">Voice Over</option>
-                            <option value="compress">GSM Compression</option>
-                        </select>
-                        <input type="range" id="noiseLevel" min="0" max="100" value="0">
-                        <p class="control-tip">🔊 Try different noise types and levels to see how the algorithm adapts</p>
-                    </div>
-                </div>
-
-                <h3>6.2. Why It Works</h3>
-                <p>Shazam's robustness comes from multiple clever design decisions:</p>
-                <ul>
-                    <li>✨ Using only the strongest peaks (they survive noise better)</li>
-                    <li>🎯 Creating multiple hashes (only some need to survive)</li>
-                    <li>🧮 Time-relative matching (tempo changes don't matter)</li>
-                    <li>📊 Statistical scoring (a few wrong matches don't hurt)</li>
-                </ul>
-
-                <div class="callout-technical">
-                    <p><strong>The numbers:</strong> Even if only 1-2% of your original hashes survive the noise, that's often enough for a match! From a 10-second clip, Shazam might generate 1000+ hashes—so even 10-20 surviving matches can be enough to identify the song with high confidence.</p>
-                </div>
-
-                <div class="fun-fact">
-                    <p><strong>Superhuman ability:</strong> Shazam can even identify multiple songs playing at once! Just like how you can focus on one conversation at a party, Shazam can pick out individual songs from a mix—sometimes better than human ears!</p>
                 </div>
             </section>
 
-            <section id="summary">
-                <h2>7. Putting It All Together</h2>
-                <p>And there you have it! Shazam's algorithm is a beautiful example of turning a complex problem into a series of clever, simple steps:</p>
-                <ol>
-                    <li>📊 Convert audio to a spectrogram (FFT)</li>
-                    <li>⭐ Find the brightest points (peaks)</li>
-                    <li>🌟 Create constellations (pair points)</li>
-                    <li>🔢 Generate hashes (fingerprints)</li>
-                    <li>🔍 Search for matches (database lookup)</li>
-                    <li>✅ Verify alignment (time offset clustering)</li>
-                </ol>
-
-                <div class="callout-quote">
-                    <p>"The best algorithms are often the ones that find a simple way to solve a complex problem. Shazam's genius lies not in using cutting-edge AI or complex math, but in reducing audio recognition to a straightforward pattern matching problem that even a 2002 phone could solve quickly."</p>
+            <section id="verification">
+                <h2>Verifying the Match</h2>
+                <p>
+                    The final step is to verify our potential matches. For each matching hash, we look at when it occurred in both 
+                    the sample and the database song. If we find many hashes that are offset by the same amount of time, we've 
+                    found our song! This time-based verification is what makes Shazam so accurate, even with background noise or 
+                    poor audio quality.
+                </p>
+                <div class="visualization-container">
+                    <div class="visualization-wrapper">
+                        <div class="placeholder-text">Time Alignment Visualization Coming Soon</div>
+                    </div>
                 </div>
+            </section>
 
-                <p class="lead">Now that you understand how it works, try the interactive demos above with different songs and noise levels. It's amazing how such a seemingly simple approach can be so powerful in practice!</p>
+            <section id="conclusion">
+                <h2>Conclusion</h2>
+                <p>
+                    And that's how Shazam works! The app:
+                </p>
+                <ol>
+                    <li>Records a sample of the playing music</li>
+                    <li>Creates a spectrogram to analyze frequencies over time</li>
+                    <li>Finds peak frequencies to create a constellation map</li>
+                    <li>🔢 Generates hashes (fingerprints)</li>
+                    <li>🔍 Searches for matches (database lookup)</li>
+                    <li>✅ Verifies alignment (time offset clustering)</li>
+                </ol>
+                <p>
+                    This clever combination of signal processing and efficient matching allows Shazam to quickly identify songs
+                    from just a few seconds of audio, even in noisy environments.
+                </p>
+                <div class="reference">
+                    <p>
+                        To learn more about the technical details of this algorithm, check out the original paper:
+                        <br>
+                        Wang, A. L.-C. (2003). "<a href="https://www.ee.columbia.edu/~dpwe/papers/Wang03-shazam.pdf">An Industrial-Strength Audio Search Algorithm</a>". 
+                        Shazam Entertainment, Ltd.
+                    </p>
+                </div>
             </section>
         </article>
     </main>
