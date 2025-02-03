@@ -136,11 +136,24 @@ main.container {
 }
 
 .visualization-container {
-    margin: 2rem 0;
-    padding: 1rem;
-    background-color: #f8f9fa;
+    background: #f8f9fa;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#waveform {
+    margin-bottom: 20px;
+}
+
+#spectrogram {
+    margin-top: 20px;
+}
+
+wave {
+    border-radius: 4px;
+    overflow: hidden;
 }
 
 .visualization-wrapper {
@@ -931,4 +944,19 @@ button:hover {
     background-color: #222;
     color: white;
     padding: 0.5rem;
+}
+
+/* Spectrogram container */
+#spectrogram-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#spectrogram-waveform {
+    height: 80px;
+}
+
+#spectrogram {
+    height: 200px;
 }

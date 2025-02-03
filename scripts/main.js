@@ -1,10 +1,10 @@
 /**
- * Main application script
+ * Main application script using Wavesurfer.js for audio visualization
  */
 
+import WaveSurfer from 'https://unpkg.com/wavesurfer.js@7/dist/wavesurfer.esm.js';
+import Spectrogram from 'https://unpkg.com/wavesurfer.js@7/dist/plugins/spectrogram.esm.js';
 import { AudioLoader } from './utils/audio-loader.js';
-import { WaveformVisualizer } from './visualizations/waveform.js';
-import { SpectrogramVisualizer } from './visualizations/spectrogram.js';
 import { ConstellationVisualizer } from './visualizations/constellation.js';
 import { FingerprintVisualizer } from './visualizations/fingerprint.js';
 
@@ -14,18 +14,44 @@ class ShazamVisualizer {
         this.audioLoader = new AudioLoader();
         this.isPlaying = false;
         this.startTime = 0;
-        this.audioContext = null;
-        this.audioSource = null;
-
-        // Visualizations
-        this.waveformVisualizer = new WaveformVisualizer(
-            document.getElementById('waveformCanvas'),
-            800, 300
-        );
         
-        this.spectrogramVisualizer = new SpectrogramVisualizer(
-            document.getElementById('spectrogramCanvas'),
-            800, 300
+        // Create shared audio element
+        this.audioElement = document.createElement('audio');
+        this.audioElement.controls = false;
+        
+        // Initialize main waveform
+        this.waveform = WaveSurfer.create({
+            container: '#waveform',
+            waveColor: '#4a9eff',
+            progressColor: '#1e88e5',
+            height: 128,
+            normalize: true,
+            media: this.audioElement
+        });
+
+        // Initialize spectrogram waveform
+        this.spectrogramWaveform = WaveSurfer.create({
+            container: '#spectrogram-waveform',
+            waveColor: '#4a9eff',
+            progressColor: '#1e88e5',
+            height: 80,
+            normalize: true,
+            media: this.audioElement
+        });
+
+        this.spectrogramWaveform.once('interaction', () => {
+            this.spectrogramWaveform.play()
+  })
+
+        // Initialize the Spectrogram plugin
+        this.spectrogramWaveform.registerPlugin(
+            Spectrogram.create({
+                labels: true,
+                height: 200,
+                scale: 'linear',
+                fftSamples: 1024,
+                labelsBackground: 'rgba(0, 0, 0, 0.1)'
+            })
         );
 
         this.constellationVisualizer = new ConstellationVisualizer(
@@ -45,173 +71,79 @@ class ShazamVisualizer {
         this.totalTimeSpan = document.getElementById('totalTime');
         this.songSelect = document.getElementById('songSelect');
         
-        // Bind event handlers
-        this.playBtn.addEventListener('click', () => this.togglePlayback());
-        document.getElementById('progressBar').parentElement.addEventListener('click', (e) => this.seekAudio(e));
-        document.getElementById('nextAnchorBtn')?.addEventListener('click', () => this.fingerprintVisualizer.nextAnchor());
-        this.songSelect.addEventListener('change', () => this.handleSongSelection());
+        // Setup event listeners
+        this.setupEventListeners();
         
-        // Load default audio
-        this.loadAudio(this.songSelect.value);
+        // Load initial song
+        this.loadSelectedSong();
     }
 
-    async loadAudio(url) {
-        document.body.classList.add('loading');
-        try {
-            await this.audioLoader.loadAudio(url);
-            
-            // Get raw audio data for processing
-            const audioData = this.audioLoader.getAudioData();
-            
-            // Initialize visualizers with audio data
-            this.waveformVisualizer.setWaveformData(this.audioLoader.getWaveformData());
-            this.spectrogramVisualizer.setAudioData(audioData);
-            this.constellationVisualizer.setAudioData(audioData);
-            this.fingerprintVisualizer.setAudioData(audioData);
-            
-            // Update UI
-            this.updateTimeDisplay(0, this.audioLoader.getDuration());
+    setupEventListeners() {
+        this.playBtn.addEventListener('click', () => this.togglePlayback());
+        this.songSelect.addEventListener('change', () => this.loadSelectedSong());
+        
+        // Wavesurfer events
+        this.waveform.on('ready', () => {
             document.body.classList.remove('loading');
-        } catch (error) {
-            console.error('Error loading audio:', error);
-            document.body.classList.remove('loading');
-        }
+            this.updateTotalTime();
+        });
+        
+        this.waveform.on('audioprocess', () => {
+            this.updateCurrentTime();
+            this.updateProgressBar();
+        });
+        
+        this.waveform.on('finish', () => {
+            this.isPlaying = false;
+            this.updatePlayButton();
+        });
     }
 
     togglePlayback() {
-        if (!this.audioLoader.isLoaded) return;
-        
-        if (this.isPlaying) {
-            this.pauseAudio();
+        if (this.waveform.isPlaying()) {
+            this.waveform.pause();
+            this.isPlaying = false;
         } else {
-            this.playAudio();
+            this.waveform.play();
+            this.isPlaying = true;
         }
+        this.updatePlayButton();
     }
 
-    async playAudio() {
-        if (!this.audioContext) {
-            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        }
-
-        if (!this.audioSource) {
-            this.audioSource = this.audioContext.createBufferSource();
-            this.audioSource.buffer = this.audioLoader.audioBuffer;
-            this.audioSource.connect(this.audioContext.destination);
-            
-            this.startTime = this.audioContext.currentTime - (this.currentTime || 0);
-            this.audioSource.start(0, this.currentTime || 0);
-            
-            this.audioSource.onended = () => {
-                if (this.isPlaying) {
-                    this.pauseAudio();
-                    this.currentTime = 0;
-                    this.updateTimeDisplay(0, this.audioLoader.getDuration());
-                }
-            };
-        }
-
-        this.isPlaying = true;
-        this.playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-        this.startPlaybackAnimation();
+    updatePlayButton() {
+        const icon = this.playBtn.querySelector('i');
+        icon.className = this.isPlaying ? 'fas fa-pause' : 'fas fa-play';
     }
 
-    pauseAudio() {
-        if (this.audioSource) {
-            this.audioSource.stop();
-            this.audioSource = null;
-        }
-        this.isPlaying = false;
-        this.playBtn.innerHTML = '<i class="fas fa-play"></i>';
-        this.currentTime = this.audioContext ? this.audioContext.currentTime - this.startTime : 0;
-        this.cancelAnimation();
-    }
-
-    seekAudio(event) {
-        if (!this.audioLoader.isLoaded) return;
+    async loadSelectedSong() {
+        document.body.classList.add('loading');
+        const selectedSong = this.songSelect.value;
+        await Promise.all([this.waveform.load(selectedSong), this.spectrogramWaveform.load(selectedSong)]);
         
-        const rect = event.currentTarget.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const ratio = x / rect.width;
-        const time = ratio * this.audioLoader.getDuration();
-        
-        if (this.isPlaying) {
-            this.pauseAudio();
-            this.currentTime = time;
-            this.playAudio();
-        } else {
-            this.currentTime = time;
-            this.updateTimeDisplay(time, this.audioLoader.getDuration());
-            this.updateVisualizers(time, this.audioLoader.getDuration());
-        }
+        // Update song title
+        const songTitle = this.songSelect.options[this.songSelect.selectedIndex].text;
+        document.querySelector('.song-title').textContent = songTitle;
     }
 
-    startPlaybackAnimation() {
-        this.cancelAnimation();
-        
-        let lastFrameTime = 0;
-        const minFrameInterval = 1000 / 30; // Cap at 30 FPS
-        
-        const animate = (timestamp) => {
-            if (!this.isPlaying) return;
-            
-            // Throttle frame rate
-            const elapsed = timestamp - lastFrameTime;
-            if (elapsed < minFrameInterval) {
-                this.animationFrame = requestAnimationFrame(animate);
-                return;
-            }
-            lastFrameTime = timestamp;
-            
-            const currentTime = this.audioContext.currentTime - this.startTime;
-            const duration = this.audioLoader.getDuration();
-            
-            // Only update if time has changed
-            if (currentTime !== this.lastUpdateTime) {
-                this.updateTimeDisplay(currentTime, duration);
-                this.updateVisualizers(currentTime, duration);
-                this.lastUpdateTime = currentTime;
-            }
-            
-            this.animationFrame = requestAnimationFrame(animate);
-        };
-        
-        this.animationFrame = requestAnimationFrame(animate);
-    }
-
-    updateVisualizers(currentTime, duration) {
-        this.waveformVisualizer.updatePlayback(this.isPlaying, currentTime, duration);
-        this.spectrogramVisualizer.updatePlayback(this.isPlaying, currentTime, duration);
-        this.constellationVisualizer.updatePlayback(this.isPlaying, currentTime, duration);
-        this.fingerprintVisualizer.updatePlayback(this.isPlaying, currentTime, duration);
-    }
-
-    updateTimeDisplay(currentTime, duration) {
+    updateCurrentTime() {
+        const currentTime = this.waveform.getCurrentTime();
         this.currentTimeSpan.textContent = this.formatTime(currentTime);
+    }
+
+    updateTotalTime() {
+        const duration = this.waveform.getDuration();
         this.totalTimeSpan.textContent = this.formatTime(duration);
-        this.progressBar.style.width = `${(currentTime / duration) * 100}%`;
+    }
+
+    updateProgressBar() {
+        const progress = (this.waveform.getCurrentTime() / this.waveform.getDuration()) * 100;
+        this.progressBar.style.width = `${progress}%`;
     }
 
     formatTime(seconds) {
         const minutes = Math.floor(seconds / 60);
         const remainingSeconds = Math.floor(seconds % 60);
         return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-    }
-
-    cancelAnimation() {
-        if (this.animationFrame) {
-            cancelAnimationFrame(this.animationFrame);
-            this.animationFrame = null;
-        }
-    }
-
-    handleSongSelection() {
-        if (this.isPlaying) {
-            this.pauseAudio();
-        }
-        this.loadAudio(this.songSelect.value);
-        // Update song title
-        const songTitle = this.songSelect.options[this.songSelect.selectedIndex].text;
-        document.querySelector('.song-title').textContent = songTitle;
     }
 }
 
