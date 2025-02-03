@@ -6,6 +6,7 @@ import { AudioLoader } from './utils/audio-loader.js';
 import { WaveformVisualizer } from './visualizations/waveform.js';
 import { SpectrogramVisualizer } from './visualizations/spectrogram.js';
 import { ConstellationVisualizer } from './visualizations/constellation.js';
+import { FingerprintVisualizer } from './visualizations/fingerprint.js';
 
 class ShazamVisualizer {
     constructor() {
@@ -32,6 +33,11 @@ class ShazamVisualizer {
             800, 300
         );
 
+        this.fingerprintVisualizer = new FingerprintVisualizer(
+            document.querySelector('[data-type="constellation"]'),
+            800, 300
+        );
+
         // UI elements
         this.playBtn = document.getElementById('playBtn');
         this.progressBar = document.getElementById('progressBar');
@@ -41,6 +47,7 @@ class ShazamVisualizer {
         // Bind event handlers
         this.playBtn.addEventListener('click', () => this.togglePlayback());
         document.getElementById('progressBar').parentElement.addEventListener('click', (e) => this.seekAudio(e));
+        document.getElementById('nextAnchorBtn')?.addEventListener('click', () => this.fingerprintVisualizer.nextAnchor());
         
         // Load default audio
         this.loadAudio('assets/demo-song.mp3');
@@ -57,9 +64,8 @@ class ShazamVisualizer {
             // Initialize visualizers with audio data
             this.waveformVisualizer.setWaveformData(this.audioLoader.getWaveformData());
             this.spectrogramVisualizer.setAudioData(audioData);
-            
-            // Process audio data for constellation
             this.constellationVisualizer.setAudioData(audioData);
+            this.fingerprintVisualizer.setAudioData(audioData);
             
             // Update UI
             this.updateTimeDisplay(0, this.audioLoader.getDuration());
@@ -174,6 +180,7 @@ class ShazamVisualizer {
         this.waveformVisualizer.updatePlayback(this.isPlaying, currentTime, duration);
         this.spectrogramVisualizer.updatePlayback(this.isPlaying, currentTime, duration);
         this.constellationVisualizer.updatePlayback(this.isPlaying, currentTime, duration);
+        this.fingerprintVisualizer.updatePlayback(this.isPlaying, currentTime, duration);
     }
 
     updateTimeDisplay(currentTime, duration) {
