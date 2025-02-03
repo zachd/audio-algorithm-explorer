@@ -609,10 +609,6 @@ input[type="range"]::-webkit-slider-thumb:hover {
         padding: 1.5rem 1rem;
     }
 
-    .visualization-container {
-        height: 200px;
-    }
-    
     .visualization {
         height: 200px;
     }
@@ -796,7 +792,7 @@ body.error .loading-overlay {
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .visualization-wrapper {
-        height: 200px;
+        height: 300px;
     }
 
     .visualization-guide {

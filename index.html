@@ -72,7 +72,7 @@
             </header>
 
             <section id="intro">
-                <p class="lead">Ever wondered how Shazam can magically identify any song playing around you in seconds? In this interactive guide, we'll uncover the clever engineering that makes this possible. You'll discover how Shazam transforms music into digital fingerprints and matches them against millions of songs faster than you can say "what's that song?"</p>
+                <p class="lead">If you've ever been at a café or in a car when a great song comes on, you've probably pulled out your phone, opened Shazam, and within seconds known exactly what you're listening to. Let's dive into the clever engineering that makes this possible.</p>
                 <div class="callout-info">
                     <p><strong>Get hands-on:</strong> Don't just read—experiment! Try the interactive visualizations to see the algorithm dissect and analyze songs in real-time.</p>
                 </div>
@@ -89,9 +89,6 @@
                 </ul>
                 <div class="callout-quote">
                     <p>"The genius of Shazam lies in how it turns the complex problem of audio recognition into a simple pattern matching game—one that even early 2000s phones could handle."</p>
-                </div>
-                <div class="fun-fact">
-                    <p><strong>Mind-blowing fact:</strong> Today, Shazam can identify a song from a database of over 70 million tracks in under a second, even when the recording is mixed with crowd noise, played through tiny phone speakers, or compressed over a phone line!</p>
                 </div>
             </section>
 
@@ -121,7 +118,9 @@
                     <li>🎨 Color brightness = How strong each frequency is</li>
                 </ul>
                 <div id="spectrogramContainer" class="visualization-container">
-                    <canvas id="spectrogramCanvas"></canvas>
+                    <div class="visualization-wrapper">
+                        <canvas id="spectrogramCanvas"></canvas>
+                    </div>
                 </div>
                 <div class="visualization-caption">
                     <p><strong>Try it out:</strong> Watch how different parts of the song create distinct patterns in the spectrogram. Lower frequencies (bass) appear at the bottom, while higher frequencies (treble) show up at the top.</p>
@@ -143,10 +142,12 @@
                 <p>The real magic of Shazam begins here. Instead of trying to match the entire spectrogram (which would be too slow), Shazam looks for "peak points" - spots that are brighter than their surrounding area. These become the stars in our musical constellation.</p>
 
                 <div id="constellationContainer" class="visualization-container">
-                    <canvas id="constellationCanvas"></canvas>
+                    <div class="visualization-wrapper">
+                        <canvas id="constellationCanvas"></canvas>
+                    </div>
                 </div>
                 <div class="visualization-caption">
-                    <p><strong>Interactive Demo:</strong> Watch as Shazam identifies peak points (shown as white dots) in the spectrogram. These points are chosen because they stand out from their surroundings and are likely to survive even if the audio is distorted.</p>
+                    <p><strong>Interactive Demo:</strong> Watch as we identify peak points in the spectrogram and connect them to form constellations. These points are chosen because they're the strongest frequencies that persist even with background noise.</p>
                 </div>
 
                 <h3>3.2. Creating Anchor Pairs</h3>
@@ -203,11 +204,7 @@
                 </ul>
 
                 <div class="callout-technical">
-                    <p><strong>Optimization alert:</strong> These hashes are incredibly compact—just 32 bits each. This was crucial for the original Shazam service in 2002, when both storage and bandwidth were expensive. Even today, this efficiency is what allows Shazam to match songs in milliseconds!</p>
-                </div>
-
-                <div class="fun-fact">
-                    <p><strong>Mind = Blown:</strong> This simple pairing system is what makes Shazam so robust. Even if 90% of the points are lost to noise, as long as both points in any pair survive, that piece of the constellation can still be matched!</p>
+                    <p><strong>Optimization note:</strong> These hashes are incredibly compact—just 32 bits each. This was crucial for the original Shazam service in 2002, when both storage and bandwidth were expensive. Even today, this efficiency is what allows Shazam to match songs in milliseconds!</p>
                 </div>
             </section>
 
