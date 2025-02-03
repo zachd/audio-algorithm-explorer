@@ -90,24 +90,27 @@
                         <canvas id="waveformCanvas"></canvas>
                     </div>
                 </div>
+                <div class="visualization-caption">
+                    <p><strong>Try it out:</strong> Watch how the waveform changes as different parts of the song play. Notice how complex patterns emerge from simple air pressure changes!</p>
+                </div>
 
                 <h3>2.2. The Frequency Domain</h3>
                 <p>While waveforms show us how sound pressure changes over time, they don't tell us much about the frequencies present in the sound. This is where the Fast Fourier Transform (FFT) comes in. The FFT breaks down our sound wave into its constituent frequencies, showing us exactly which musical notes are playing at any moment.</p>
 
-                <div class="visualization-container">
-                    <div class="visualization-wrapper">
-                        <canvas id="spectrogramCanvas"></canvas>
-                    </div>
+                <h3>2.3. The Spectrogram: Music's Visual Fingerprint</h3>
+                <p>When we line up many FFTs side by side, we create what's called a spectrogram—think of it as a heat map where:</p>
+                <ul>
+                    <li>⏱️ Left to right = Time passing</li>
+                    <li>↕️ Bottom to top = Low to high frequencies</li>
+                    <li>🎨 Color brightness = How strong each frequency is</li>
+                </ul>
+                <div id="spectrogramContainer" class="visualization-container">
+                    <canvas id="spectrogramCanvas"></canvas>
+                </div>
+                <div class="visualization-caption">
+                    <p><strong>Try it out:</strong> Watch how different parts of the song create distinct patterns in the spectrogram. Lower frequencies (bass) appear at the bottom, while higher frequencies (treble) show up at the top.</p>
                 </div>
 
-                <h3>2.3. Enter the FFT (Fast Fourier Transform)</h3>
-                <p>The FFT is like a prism for sound—it takes a complex waveform and splits it into its frequency components. This is crucial because:</p>
-                <ul>
-                    <li>It shows us what frequencies are present at each moment</li>
-                    <li>The pattern of frequencies is more consistent than the raw waveform</li>
-                    <li>It's closer to how our ears actually process sound</li>
-                </ul>
-                
                 <div class="callout-technical">
                     <p><strong>Quick science:</strong> Every sound is made up of different frequencies mixed together. A piano note at middle C vibrates at 262 Hz (times per second), but it also creates higher harmonics that give it that distinct "piano sound". Our ears are amazing at separating these frequencies—and with some math magic called the Fast Fourier Transform (FFT), computers can do it too!</p>
                 </div>
@@ -120,42 +123,30 @@
             <section id="constellation" class="interactive-section">
                 <h2>3. Creating the Star Map: The Constellation Pattern</h2>
                 
-                <h3>3.1. The Spectrogram: Music's Heat Map</h3>
-                <p>Remember our FFT from earlier? When we line up many FFTs side by side, we create what's called a spectrogram—think of it as a heat map where:</p>
-                <ul>
-                    <li>⏱️ Left to right = Time passing</li>
-                    <li>↕️ Bottom to top = Low to high frequencies</li>
-                    <li>🎨 Color brightness = How strong each frequency is</li>
-                </ul>
+                <h3>3.1. Finding Peak Points</h3>
+                <p>The real magic of Shazam begins here. Instead of trying to match the entire spectrogram (which would be too slow), Shazam looks for "peak points" - spots that are brighter than their surrounding area. These become the stars in our musical constellation.</p>
 
-                <div class="visualization-container">
-                    <h3>Spectrogram Explorer</h3>
-                    <p>Watch your song transform into a visual pattern. Different sounds create different signatures:</p>
-                    <ul class="visualization-guide">
-                        <li>💥 Drum hits = Vertical lines (all frequencies at once)</li>
-                        <li>🎵 Sustained notes = Horizontal lines (constant frequency)</li>
-                        <li>🗣️ Vocals = Wavy lines (changing pitch)</li>
-                    </ul>
-                    <div class="visualization-wrapper">
-                        <canvas data-type="spectrogram" class="visualization-canvas"></canvas>
-                    </div>
-                    <div class="controls">
-                        <label for="thresholdSlider">Peak Brightness: <span class="threshold-value">0</span></label>
-                        <input type="range" id="thresholdSlider" min="0" max="255" value="0">
-                        <p class="control-tip">✨ Slide to reveal only the brightest points—these are what Shazam looks for!</p>
-                    </div>
+                <div id="constellationContainer" class="visualization-container">
+                    <canvas id="constellationCanvas"></canvas>
+                </div>
+                <div class="visualization-caption">
+                    <p><strong>Interactive Demo:</strong> Watch as Shazam identifies peak points (shown as white dots) in the spectrogram. These points are chosen because they stand out from their surroundings and are likely to survive even if the audio is distorted.</p>
                 </div>
 
-                <h3>3.2. Finding the Stars</h3>
-                <p>Here's where Shazam gets clever. Instead of trying to remember every detail of the spectrogram (which would be huge), it only picks out the brightest points—like finding the brightest stars in a night sky. These points are special because:</p>
+                <h3>3.2. Creating Anchor Pairs</h3>
+                <p>Once we have our peak points, Shazam creates "constellations" by connecting them in pairs. Each pair consists of:</p>
                 <ul>
-                    <li>They survive even when the audio is noisy</li>
-                    <li>They're relatively rare, making them more unique</li>
-                    <li>They're quick to process (important for those 2000s phones!)</li>
+                    <li>🎯 An anchor point (shown in blue)</li>
+                    <li>🔗 A target point within a specific time and frequency range (shown in green)</li>
+                    <li>⏱️ The time difference between them</li>
                 </ul>
 
                 <div class="callout-technical">
-                    <p><strong>The secret sauce:</strong> Shazam doesn't just pick any bright points. It looks for points that are brighter than ALL their neighbors in a small region. This ensures the points are truly "peaks" and not just part of a generally bright area.</p>
+                    <p><strong>Why pairs?</strong> Using pairs of points instead of single points makes the system more robust. Even if some points are lost due to noise, enough pairs usually survive to make a match. It's like having multiple witnesses to identify a song!</p>
+                </div>
+
+                <div class="callout-example">
+                    <p><strong>Real-world parallel:</strong> Think of it like identifying a constellation in the night sky. You don't need to see every star—just a few key patterns are enough to recognize Orion's Belt or the Big Dipper.</p>
                 </div>
             </section>
 

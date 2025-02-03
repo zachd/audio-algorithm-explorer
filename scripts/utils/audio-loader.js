@@ -65,10 +65,21 @@ export class AudioLoader {
     }
 
     /**
-     * Get raw audio data for spectral analysis
+     * Get the raw audio data from the audio buffer
      * @returns {Float32Array} Raw audio data
      */
     getAudioData() {
+        if (!this.isLoaded) {
+            throw new Error('Audio not loaded');
+        }
+        return this.audioBuffer.getChannelData(0);
+    }
+
+    /**
+     * Get raw audio data for spectral analysis
+     * @returns {Float32Array} Raw audio data
+     */
+    getAudioDataForSpectralAnalysis() {
         if (!this.isLoaded) {
             throw new Error('Audio not loaded');
         }
