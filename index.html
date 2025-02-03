@@ -74,7 +74,7 @@
             <section id="intro">
                 <p class="lead">If you've ever been at a café or in a car when a great song comes on, you've probably pulled out your phone, opened Shazam, and within seconds known exactly what you're listening to. Let's dive into the clever engineering that makes this possible.</p>
                 <div class="callout-info">
-                    <p><strong>Get hands-on:</strong> Don't just read—experiment! Try the interactive visualizations to see the algorithm dissect and analyze songs in real-time.</p>
+                    <p><strong>Get hands-on:</strong> Don't just read. Experiment! Try the interactive visualizations to see the algorithm dissect and analyze songs in real-time.</p>
                 </div>
             </section>
 
@@ -88,7 +88,7 @@
                     <li>Work with the limited processing power of early 2000s phones</li>
                 </ul>
                 <div class="callout-quote">
-                    <p>"The genius of Shazam lies in how it turns the complex problem of audio recognition into a simple pattern matching game—one that even early 2000s phones could handle."</p>
+                    <p>"The genius of Shazam lies in how it turns the complex problem of audio recognition into a simple pattern matching game that even early 2000s phones could handle."</p>
                 </div>
             </section>
 
@@ -96,7 +96,7 @@
                 <h2>2. From Sound to Numbers: The Building Blocks</h2>
                 
                 <h3>2.1. Sound Waves 101</h3>
-                <p>Before we dive into Shazam's magic, let's understand what we're working with. Sound is just vibrating air—when a speaker plays music, it's pushing and pulling air molecules to create pressure waves that reach our ears.</p>
+                <p>Before we dive into Shazam's magic, let's understand what we're working with. Sound is simply vibrating air: when a speaker plays music, it pushes and pulls air molecules to create pressure waves that reach our ears.</p>
                 
                 <div class="visualization-container">
                     <div class="visualization-wrapper">
@@ -111,7 +111,7 @@
                 <p>While waveforms show us how sound pressure changes over time, they don't tell us much about the frequencies present in the sound. This is where the Fast Fourier Transform (FFT) comes in. The FFT breaks down our sound wave into its constituent frequencies, showing us exactly which musical notes are playing at any moment.</p>
 
                 <h3>2.3. The Spectrogram: Music's Visual Fingerprint</h3>
-                <p>When we line up many FFTs side by side, we create what's called a spectrogram—think of it as a heat map where:</p>
+                <p>When we line up many FFTs side by side, we create what's called a spectrogram. Think of it as a heat map where:</p>
                 <ul>
                     <li>⏱️ Left to right = Time passing</li>
                     <li>↕️ Bottom to top = Low to high frequencies</li>
@@ -127,11 +127,11 @@
                 </div>
 
                 <div class="callout-technical">
-                    <p><strong>Quick science:</strong> Every sound is made up of different frequencies mixed together. A piano note at middle C vibrates at 262 Hz (times per second), but it also creates higher harmonics that give it that distinct "piano sound". Our ears are amazing at separating these frequencies—and with some math magic called the Fast Fourier Transform (FFT), computers can do it too!</p>
+                    <p><strong>Quick science:</strong> Every sound consists of different frequencies mixed together. A piano note at middle C vibrates at 262 Hz (times per second), and it creates higher harmonics that give it that distinct "piano sound". Our ears are amazing at separating these frequencies, and with some math magic called the Fast Fourier Transform (FFT), computers can do it too!</p>
                 </div>
 
                 <div class="callout-example">
-                    <p><strong>Real-world parallel:</strong> Imagine you're trying to identify a cake recipe just by looking at the finished cake. The waveform is like looking at the whole cake, while the FFT is like listing out all the ingredients—much more useful for identification!</p>
+                    <p><strong>Real-world parallel:</strong> Imagine trying to identify a cake recipe just by looking at the finished cake. The waveform is like looking at the whole cake, while the FFT is like listing out all the ingredients. Much more useful for identification!</p>
                 </div>
             </section>
 
@@ -163,7 +163,7 @@
                 </div>
 
                 <div class="callout-example">
-                    <p><strong>Real-world parallel:</strong> Think of it like identifying a constellation in the night sky. You don't need to see every star—just a few key patterns are enough to recognize Orion's Belt or the Big Dipper.</p>
+                    <p><strong>Real-world parallel:</strong> Think of it like identifying a constellation in the night sky. You don't need to see every star. Just a few key patterns are enough to recognize Orion's Belt or the Big Dipper.</p>
                 </div>
             </section>
 
@@ -171,7 +171,7 @@
                 <h2>4. Creating the Fingerprint: Combinatorial Hashing</h2>
                 
                 <h3>4.1. Connecting the Stars</h3>
-                <p>Having a bunch of bright points isn't enough—we need a way to remember how they're arranged. This is where Shazam's genius really shines. Instead of trying to remember every point, it creates "constellations" by:</p>
+                <p>Having a bunch of bright points isn't enough. We need a way to remember how they're arranged. This is where Shazam's genius really shines. Instead of trying to remember every point, it creates "constellations" by:</p>
                 <ol>
                     <li>Picking an "anchor" point</li>
                     <li>Looking at nearby points within a "target zone"</li>
@@ -196,7 +196,7 @@
                 </div>
 
                 <h3>4.2. The Magic Numbers</h3>
-                <p>Each pair of points gets turned into a compact "hash"—a single number that captures:</p>
+                <p>Each pair of points gets turned into a compact "hash": a single number that captures:</p>
                 <ul>
                     <li>🎵 Frequency of the anchor point</li>
                     <li>🎵 Frequency of the target point</li>
@@ -204,7 +204,7 @@
                 </ul>
 
                 <div class="callout-technical">
-                    <p><strong>Optimization note:</strong> These hashes are incredibly compact—just 32 bits each. This was crucial for the original Shazam service in 2002, when both storage and bandwidth were expensive. Even today, this efficiency is what allows Shazam to match songs in milliseconds!</p>
+                    <p><strong>Optimization note:</strong> These hashes are incredibly compact, just 32 bits each. This was crucial for the original Shazam service in 2002, when both storage and bandwidth were expensive. Even today, this efficiency is what allows Shazam to match songs in milliseconds!</p>
                 </div>
             </section>
 
