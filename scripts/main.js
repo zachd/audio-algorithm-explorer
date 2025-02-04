@@ -5,8 +5,7 @@
 import WaveSurfer from 'https://unpkg.com/wavesurfer.js@7/dist/wavesurfer.esm.js';
 import Spectrogram from 'https://unpkg.com/wavesurfer.js@7/dist/plugins/spectrogram.esm.js';
 import { AudioLoader } from './utils/audio-loader.js';
-import { ConstellationVisualizer } from './visualizations/constellation.js';
-import { FingerprintVisualizer } from './visualizations/fingerprint.js';
+import ConstellationPlugin from './plugins/constellation.js';
 
 class ShazamVisualizer {
     constructor() {
@@ -50,19 +49,66 @@ class ShazamVisualizer {
                 height: 200,
                 scale: 'linear',
                 fftSamples: 1024,
-                labelsBackground: 'rgba(0, 0, 0, 0.1)'
+                labelsBackground: 'rgba(0, 0, 0, 0.1)',
+                container: '#spectrogram'
             })
         );
 
-        this.constellationVisualizer = new ConstellationVisualizer(
-            document.getElementById('constellationCanvas'),
-            800, 300
+        // Initialize constellation waveform and spectrogram
+        this.constellationWaveform = WaveSurfer.create({
+            container: '#constellation-waveform',
+            waveColor: '#4a9eff',
+            progressColor: '#1e88e5',
+            height: 80,
+            normalize: true,
+            media: this.audioElement
+        });
+
+        // Initialize constellation spectrogram with plugin
+        this.constellationWaveform.registerPlugin(
+            Spectrogram.create({
+                labels: true,
+                height: 200,
+                scale: 'linear',
+                fftSamples: 1024,
+                labelsBackground: 'rgba(0, 0, 0, 0.1)',
+                container: '#constellation-spectrogram'
+            })
         );
 
-        this.fingerprintVisualizer = new FingerprintVisualizer(
-            document.querySelector('[data-type="constellation"]'),
-            800, 300
+        // Initialize constellation plugin
+        this.constellationWaveform.registerPlugin(
+            ConstellationPlugin.create({
+                minPeakMagnitude: 0.2,    // Lower threshold to catch more peaks
+                neighborhoodSize: 2,       // Smaller neighborhood for more precise peaks
+                maxDistance: 30,
+                maxTimeDistance: 50,
+                peakDensity: 0.01,       // Slightly more peaks
+                peakColor: 'yellow',
+                peakRadius: 2,
+                connectionColor: 'rgba(255, 255, 0, 0.2)',
+                connectionWidth: 1
+            })
         );
+
+        // Sync constellation waveform with main waveform
+        this.waveform.on('play', () => {
+            if (!this.spectrogramWaveform.isPlaying()) {
+                this.spectrogramWaveform.play();
+            }
+            if (!this.constellationWaveform.isPlaying()) {
+                this.constellationWaveform.play();
+            }
+        });
+        
+        this.waveform.on('pause', () => {
+            if (this.spectrogramWaveform.isPlaying()) {
+                this.spectrogramWaveform.pause();
+            }
+            if (this.constellationWaveform.isPlaying()) {
+                this.constellationWaveform.pause();
+            }
+        });
 
         // UI elements
         this.playBtn = document.getElementById('playBtn');
@@ -118,7 +164,14 @@ class ShazamVisualizer {
     async loadSelectedSong() {
         document.body.classList.add('loading');
         const selectedSong = this.songSelect.value;
-        await Promise.all([this.waveform.load(selectedSong), this.spectrogramWaveform.load(selectedSong)]);
+
+        // Clear constellation dots
+        const constellationPlugin = this.constellationWaveform.getActivePlugins().find(p => p.name === 'constellation')
+        if (constellationPlugin) {
+            constellationPlugin.clear()
+        }
+
+        await Promise.all([this.waveform.load(selectedSong), this.spectrogramWaveform.load(selectedSong), this.constellationWaveform.load(selectedSong)]);
         
         // Update song title
         const songTitle = this.songSelect.options[this.songSelect.selectedIndex].text;

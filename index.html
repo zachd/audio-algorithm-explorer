@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Shazam Algorithm Explained</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="styles/main.css" rel="stylesheet">
     <script src="https://unpkg.com/wavesurfer.js@7/dist/wavesurfer.esm.js" type="module"></script>
     <script src="https://unpkg.com/wavesurfer.js@7/dist/plugins/spectrogram.esm.js" type="module"></script>
@@ -139,9 +139,8 @@
                 <p>The real magic of Shazam begins here. Instead of trying to match the entire spectrogram (which would be too slow), Shazam looks for "peak points" - spots that are brighter than their surrounding area. These become the stars in our musical constellation.</p>
 
                 <div id="constellationContainer" class="visualization-container">
-                    <div class="visualization-wrapper">
-                        <canvas id="constellationCanvas"></canvas>
-                    </div>
+                    <div id="constellation-waveform"></div>
+                    <div id="constellation-spectrogram"></div>
                 </div>
                 <div class="visualization-caption">
                     <p><strong>Interactive Demo:</strong> Watch as we identify peak points in the spectrogram and connect them to form constellations. These points are chosen because they're the strongest frequencies that persist even with background noise.</p>
