@@ -181,80 +181,109 @@ class ConstellationPlugin extends EventEmitter {
         if (!frequencies || !frequencies.length) return
 
         const peaks = []
-        const { minPeakMagnitude, neighborhoodSize, peakDensity } = this.options
-        const timeNeighborhood = 2
-
+        const { minPeakMagnitude } = this.options
+        
         // Get the frequency data
         const freqData = frequencies
         const numTimeFrames = freqData.length
         const numFreqBins = freqData[0].length
 
-        // Process entire time range in smaller chunks
-        const chunkSize = Math.max(20, Math.floor(numTimeFrames * 0.1)) // Process 10% at a time
-        for (let startFrame = 0; startFrame < numTimeFrames; startFrame += chunkSize) {
-            const endFrame = Math.min(startFrame + chunkSize, numTimeFrames)
-            
-            // For each time slice in this chunk
-            for (let timeIndex = startFrame; timeIndex < endFrame; timeIndex++) {
-                if (timeIndex < timeNeighborhood || timeIndex >= numTimeFrames - timeNeighborhood) continue
+        // Calculate global statistics for adaptive thresholding
+        let maxMagnitude = 0
+        let totalMagnitude = 0
+        let magnitudeCount = 0
 
-                const localPeaks = []
+        for (let timeIndex = 0; timeIndex < numTimeFrames; timeIndex++) {
+            for (let freqIndex = 0; freqIndex < numFreqBins; freqIndex++) {
+                const magnitude = freqData[timeIndex][freqIndex] / 255
+                if (magnitude > maxMagnitude) maxMagnitude = magnitude
+                totalMagnitude += magnitude
+                magnitudeCount++
+            }
+        }
 
-                // For each frequency bin (except edges)
-                for (let freqIndex = neighborhoodSize; freqIndex < numFreqBins - neighborhoodSize; freqIndex++) {
-                    const magnitude = freqData[timeIndex][freqIndex] / 255
+        const avgMagnitude = totalMagnitude / magnitudeCount
+        const dynamicMinMagnitude = Math.max(minPeakMagnitude, avgMagnitude * 1.2)
 
-                    // Skip if magnitude is too low
-                    if (magnitude < minPeakMagnitude) continue
+        // Adjust region size based on audio content
+        const energyLevel = avgMagnitude / maxMagnitude
+        const baseRegionSize = 8
+        const minRegions = 20
+        const maxRegions = 40
+        const timeRegions = Math.max(minRegions, Math.min(maxRegions, Math.floor(baseRegionSize / energyLevel)))
+        const freqRegions = Math.max(minRegions, Math.min(maxRegions, Math.floor(baseRegionSize / energyLevel)))
+        
+        const timeRegionSize = Math.floor(numTimeFrames / timeRegions)
+        const freqRegionSize = Math.floor(numFreqBins / freqRegions)
 
-                    // Check if it's a peak in both time and frequency
-                    let isPeak = true
-                    let isMaxInRegion = true
+        // For each region
+        for (let timeRegion = 0; timeRegion < timeRegions; timeRegion++) {
+            for (let freqRegion = 0; freqRegion < freqRegions; freqRegion++) {
+                const timeStart = timeRegion * timeRegionSize
+                const timeEnd = Math.min((timeRegion + 1) * timeRegionSize, numTimeFrames)
+                const freqStart = freqRegion * freqRegionSize
+                const freqEnd = Math.min((freqRegion + 1) * freqRegionSize, numFreqBins)
 
-                    // Check frequency neighborhood
-                    for (let f = -neighborhoodSize; f <= neighborhoodSize && isPeak; f++) {
-                        if (f === 0) continue
-                        const neighborMag = freqData[timeIndex][freqIndex + f] / 255
-                        if (neighborMag > magnitude) {
-                            isMaxInRegion = false
-                            break
-                        }
-                    }
+                let maxMagnitude = 0
+                let maxPeak = null
+                let regionAvgMagnitude = 0
+                let regionCount = 0
 
-                    if (!isMaxInRegion) continue
-
-                    // Check time neighborhood
-                    for (let t = -timeNeighborhood; t <= timeNeighborhood && isPeak; t++) {
-                        if (t === 0) continue
-                        const neighborMag = freqData[timeIndex + t][freqIndex] / 255
-                        if (neighborMag > magnitude) {
-                            isPeak = false
-                            break
-                        }
-                    }
-
-                    if (isPeak && isMaxInRegion) {
-                        localPeaks.push({
-                            frequency: freqIndex,
-                            magnitude: magnitude,
-                            time: timeIndex
-                        })
+                // First pass: calculate region statistics
+                for (let timeIndex = timeStart; timeIndex < timeEnd; timeIndex++) {
+                    for (let freqIndex = freqStart; freqIndex < freqEnd; freqIndex++) {
+                        const magnitude = freqData[timeIndex][freqIndex] / 255
+                        regionAvgMagnitude += magnitude
+                        regionCount++
                     }
                 }
+                regionAvgMagnitude /= regionCount
 
-                // Sort peaks by magnitude and keep top ones
-                if (localPeaks.length > 0) {
-                    localPeaks.sort((a, b) => b.magnitude - a.magnitude)
-                    // Adjust number of peaks based on magnitude distribution
-                    const strongPeaks = localPeaks.filter(p => p.magnitude > 0.8 * localPeaks[0].magnitude)
-                    const numPeaksToKeep = Math.max(
-                        1,
-                        Math.min(
-                            strongPeaks.length,
-                            Math.floor(numFreqBins * peakDensity)
-                        )
-                    )
-                    peaks.push(...localPeaks.slice(0, numPeaksToKeep))
+                // Only process region if it has significant energy
+                if (regionAvgMagnitude > dynamicMinMagnitude * 0.3) {
+                    // Second pass: find peaks
+                    for (let timeIndex = timeStart; timeIndex < timeEnd; timeIndex++) {
+                        for (let freqIndex = freqStart; freqIndex < freqEnd; freqIndex++) {
+                            const magnitude = freqData[timeIndex][freqIndex] / 255
+
+                            // Skip if magnitude is too low relative to both global and local thresholds
+                            if (magnitude < dynamicMinMagnitude || magnitude < regionAvgMagnitude * 1.1) continue
+
+                            // Check if it's higher than ALL neighbors in a small window
+                            let isHighest = true
+                            for (let t = -2; t <= 2 && isHighest; t++) {
+                                for (let f = -2; f <= 2 && isHighest; f++) {
+                                    if (t === 0 && f === 0) continue
+                                    
+                                    const neighborTime = timeIndex + t
+                                    const neighborFreq = freqIndex + f
+                                    
+                                    if (neighborTime >= 0 && neighborTime < numTimeFrames && 
+                                        neighborFreq >= 0 && neighborFreq < numFreqBins) {
+                                        const neighborMag = freqData[neighborTime][neighborFreq] / 255
+                                        if (neighborMag >= magnitude) {
+                                            isHighest = false
+                                            break
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (isHighest && magnitude > maxMagnitude) {
+                                maxMagnitude = magnitude
+                                maxPeak = {
+                                    frequency: freqIndex,
+                                    magnitude: magnitude,
+                                    time: timeIndex
+                                }
+                            }
+                        }
+                    }
+
+                    // Add the highest peak from this region if we found one
+                    if (maxPeak) {
+                        peaks.push(maxPeak)
+                    }
                 }
             }
         }
@@ -262,6 +291,10 @@ class ConstellationPlugin extends EventEmitter {
         if (peaks.length > 0) {
             console.log('Peak statistics:', {
                 totalPeaks: peaks.length,
+                timeRegions,
+                freqRegions,
+                avgMagnitude: avgMagnitude.toFixed(3),
+                dynamicMinMagnitude: dynamicMinMagnitude.toFixed(3),
                 timeRange: {
                     min: Math.min(...peaks.map(p => p.time)),
                     max: Math.max(...peaks.map(p => p.time))
@@ -269,12 +302,7 @@ class ConstellationPlugin extends EventEmitter {
                 freqRange: {
                     min: Math.min(...peaks.map(p => p.frequency)),
                     max: Math.max(...peaks.map(p => p.frequency))
-                },
-                samplePeaks: peaks.slice(0, 5).map(p => ({
-                    time: `${p.time} (${(p.time / numTimeFrames * 100).toFixed(1)}%)`,
-                    freq: `${p.frequency} (${(p.frequency / numFreqBins * 100).toFixed(1)}%)`,
-                    magnitude: p.magnitude.toFixed(2)
-                }))
+                }
             })
         }
 

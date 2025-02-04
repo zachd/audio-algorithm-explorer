@@ -79,12 +79,10 @@ class ShazamVisualizer {
         // Initialize constellation plugin
         this.constellationWaveform.registerPlugin(
             ConstellationPlugin.create({
-                minPeakMagnitude: 0.2,    // Lower threshold to catch more peaks
-                neighborhoodSize: 2,       // Smaller neighborhood for more precise peaks
+                minPeakMagnitude: 0.25,    // Base threshold, will be adjusted dynamically
                 maxDistance: 30,
                 maxTimeDistance: 50,
-                peakDensity: 0.01,       // Slightly more peaks
-                peakColor: 'yellow',
+                peakColor: 'white',
                 peakRadius: 2,
                 connectionColor: 'rgba(255, 255, 0, 0.2)',
                 connectionWidth: 1
